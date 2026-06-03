@@ -1,0 +1,169 @@
+<!-- NAV -->
+<nav class="nav" [class.nav--open]="menuOpen">
+  <div class="nav__logo cinzel" (click)="scrollTo('hero')">
+    <span class="nav__logo-icon">♦</span>
+    Vende tu Alma
+  </div>
+  <button class="nav__burger" (click)="toggleMenu()" [class.active]="menuOpen" aria-label="menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav__links" [class.open]="menuOpen">
+    <li (click)="scrollTo('como-funciona')">Cómo funciona</li>
+    <li (click)="scrollTo('catalogo')">El catálogo</li>
+    <li (click)="scrollTo('reglas')">Las reglas</li>
+    <li><button class="btn-nav" (click)="scrollTo('acceso')">Entrar al bar</button></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero__bg">
+    <div class="hero__particles">
+      <span *ngFor="let p of [1,2,3,4,5,6,7,8]" class="particle" [style.animation-delay]="(p*0.7)+'s'" [style.left]="(p*12)+'%'">◆</span>
+    </div>
+    <div class="hero__vignette"></div>
+  </div>
+
+  <div class="hero__content">
+    <p class="hero__pre cinzel">Una noche. Un juego. Sin límites.</p>
+    <div class="hero__ornament">
+      <span class="orn-line"></span>
+      <span class="orn-diamond">◆</span>
+      <span class="orn-line"></span>
+    </div>
+    <h1 class="hero__title cinzel">
+      Vende<br><em>tu Alma</em>
+    </h1>
+    <p class="hero__subtitle">
+      La dinámica más atrevida del bar. Sube lo que estás dispuesto a ofrecer,<br>
+      encuentra a quien lo desea, y negocia en persona.
+    </p>
+    <div class="hero__cta">
+      <button class="btn-primary cinzel" (click)="scrollTo('como-funciona')">
+        <span>Descubre el juego</span>
+        <span class="btn-arrow">→</span>
+      </button>
+      <button class="btn-ghost cinzel" (click)="scrollTo('acceso')">
+        Acceder esta noche
+      </button>
+    </div>
+    <div class="hero__stats">
+      <div class="stat">
+        <span class="stat__num cinzel">∞</span>
+        <span class="stat__label">posibilidades</span>
+      </div>
+      <div class="stat__divider">◆</div>
+      <div class="stat">
+        <span class="stat__num cinzel">100%</span>
+        <span class="stat__label">consensuado</span>
+      </div>
+      <div class="stat__divider">◆</div>
+      <div class="stat">
+        <span class="stat__num cinzel">0</span>
+        <span class="stat__label">rastros digitales</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero__scroll-hint">
+    <span class="cinzel">scroll</span>
+    <span class="scroll-line"></span>
+  </div>
+</section>
+
+<!-- COMO FUNCIONA -->
+<section class="steps-section" id="como-funciona">
+  <div class="section-header">
+    <div class="ornament-row"><span class="orn-line"></span><span class="orn-diamond cinzel">◆</span><span class="orn-line"></span></div>
+    <p class="section-label cormorant-sc">El ritual</p>
+    <h2 class="section-title cinzel">Cómo funciona</h2>
+  </div>
+
+  <div class="steps">
+    <div class="step" *ngFor="let s of steps; let i = index" [style.animation-delay]="(i*0.15)+'s'">
+      <div class="step__num cinzel">{{ s.num }}</div>
+      <div class="step__body">
+        <h3 class="step__title cinzel">{{ s.title }}</h3>
+        <p class="step__desc">{{ s.desc }}</p>
+      </div>
+      <div class="step__connector" *ngIf="i < steps.length - 1"></div>
+    </div>
+  </div>
+</section>
+
+<!-- CATALOGO -->
+<section class="catalog-section" id="catalogo">
+  <div class="section-header">
+    <div class="ornament-row"><span class="orn-line"></span><span class="orn-diamond cinzel">◆</span><span class="orn-line"></span></div>
+    <p class="section-label cormorant-sc">Lo que se ofrece</p>
+    <h2 class="section-title cinzel">El Catálogo</h2>
+    <p class="section-desc">Cada oferta tiene una ponderación asignada por el administrador según su grado de atrevimiento. Cuanto más osas, más vales.</p>
+  </div>
+
+  <div class="catalog-grid">
+    <div class="offer-card" *ngFor="let o of offers" [class]="'offer-card--'+o.tier">
+      <div class="offer-card__tier cormorant-sc">{{ o.tier }}</div>
+      <div class="offer-card__icon">{{ o.icon }}</div>
+      <h3 class="offer-card__title cinzel">{{ o.title }}</h3>
+      <p class="offer-card__desc">{{ o.desc }}</p>
+      <div class="offer-card__pts">
+        <span class="pts-num cinzel">{{ o.pts }}</span>
+        <span class="pts-label cormorant-sc">créditos</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="catalog-note">
+    <span class="orn-diamond">◆</span>
+    <p>El administrador del bar calibra cada ponderación en tiempo real según la energía de la noche.</p>
+  </div>
+</section>
+
+<!-- REGLAS -->
+<section class="rules-section" id="reglas">
+  <div class="rules-inner">
+    <div class="section-header">
+      <div class="ornament-row"><span class="orn-line"></span><span class="orn-diamond cinzel">◆</span><span class="orn-line"></span></div>
+      <p class="section-label cormorant-sc">El código</p>
+      <h2 class="section-title cinzel">Las Reglas</h2>
+    </div>
+    <ul class="rules-list">
+      <li *ngFor="let r of rules; let i = index" class="rule-item">
+        <span class="rule-num cinzel">0{{ i+1 }}</span>
+        <span class="rule-text">{{ r }}</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ACCESO CTA -->
+<section class="access-section" id="acceso">
+  <div class="access-bg"></div>
+  <div class="access-content">
+    <div class="ornament-row"><span class="orn-line"></span><span class="orn-diamond cinzel">◆</span><span class="orn-line"></span></div>
+    <h2 class="access-title cinzel">¿Estás listo<br><em>para vender?</em></h2>
+    <p class="access-sub">Solo quienes están dispuestos a arriesgar entran al juego.</p>
+    <div class="access-btns">
+      <button class="btn-primary btn-large cinzel">
+        <span>Registrarme como pareja</span>
+        <span class="btn-arrow">→</span>
+      </button>
+      <button class="btn-gold cinzel">
+        <span class="unicorn-badge">◆</span> Entrar como unicornio
+      </button>
+    </div>
+    <p class="access-note cormorant-sc">Acceso validado en puerta · Sin datos permanentes · Solo esta noche</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer__logo cinzel">
+    <span>♦</span> Vende tu Alma
+  </div>
+  <p class="footer__tagline cormorant-sc">Una noche. Un juego. Sin rastros.</p>
+  <div class="footer__ornament">
+    <span class="orn-line"></span><span class="orn-diamond">◆</span><span class="orn-line"></span>
+  </div>
+  <p class="footer__legal">Dinámica exclusiva para adultos en entornos privados con acceso controlado.</p>
+</footer>
