@@ -1,0 +1,147 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+  background: radial-gradient(circle at top, rgba(10,10,10,1) 0%, rgba(5,5,5,1) 45%, #000 100%);
+  color: var(--text-primary);
+}
+
+.app-shell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Top bar ── */
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba(5, 5, 5, 0.97);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  /* iOS safe area */
+  padding-top: max(0.75rem, env(safe-area-inset-top));
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  white-space: nowrap;
+}
+
+.brand-icon {
+  font-size: 0.9rem;
+  color: var(--gold);
+}
+
+.credit-pill {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  background: rgba(201, 168, 76, 0.08);
+  border: 1px solid var(--border);
+  padding: 0.45rem 0.75rem;
+  border-radius: 2px;
+  font-family: 'Cinzel', serif;
+  color: var(--gold);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.credit-value {
+  font-size: 1.1rem;
+}
+
+.credit-label {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  font-family: 'Cormorant SC', serif;
+  letter-spacing: 0.1em;
+}
+
+/* ── Main content ── */
+.app-main {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Extra bottom padding so content doesn't hide under fixed nav */
+.app-shell.has-bottom-nav .app-main {
+  padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* ── Bottom nav (fixed) ── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 0.4rem 0.25rem calc(0.4rem + env(safe-area-inset-bottom, 0px));
+  background: rgba(5, 5, 5, 0.98);
+  border-top: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.bottom-nav .nav-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 0.25rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-family: 'Cormorant SC', serif;
+  letter-spacing: 0.12em;
+  font-size: 0.68rem;
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  transition: color 0.25s, border-color 0.25s, background 0.25s;
+}
+
+.bottom-nav .nav-link.active,
+.bottom-nav .nav-link:hover {
+  color: var(--gold);
+  border-color: var(--border);
+  background: rgba(201, 168, 76, 0.07);
+}
+
+/* Larger screens: slightly more comfortable nav */
+@media (min-width: 480px) {
+  .bottom-nav .nav-link {
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    padding: 0.8rem 0.5rem;
+  }
+
+  .top-bar {
+    padding: 0.85rem 1.5rem;
+  }
+
+  .brand {
+    font-size: 0.9rem;
+  }
+
+  .credit-pill {
+    padding: 0.55rem 1rem;
+  }
+
+  .credit-value {
+    font-size: 1.2rem;
+  }
+}

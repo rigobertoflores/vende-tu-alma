@@ -1,18 +1,24 @@
 <!-- NAV -->
-<nav class="nav" [class.nav--open]="menuOpen">
-  <div class="nav__logo cinzel" (click)="scrollTo('hero')">
-    <span class="nav__logo-icon">♦</span>
-    Vende tu Alma
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top p-0">
+  <div class="container-fluid px-4 py-3">
+    <div class="navbar-brand nav__logo cinzel" (click)="scrollTo('hero')" role="button">
+      <span class="nav__logo-icon">♦</span>
+      Vende tu Alma
+    </div>
+
+    <button class="navbar-toggler" type="button" aria-label="Toggle navigation" (click)="toggleMenu()" [attr.aria-expanded]="menuOpen">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" [class.show]="menuOpen">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 nav__links">
+        <li class="nav-item"><a class="nav-link" role="button" (click)="scrollTo('como-funciona')">Cómo funciona</a></li>
+        <li class="nav-item"><a class="nav-link" role="button" (click)="scrollTo('catalogo')">El catálogo</a></li>
+        <li class="nav-item"><a class="nav-link" role="button" (click)="scrollTo('reglas')">Las reglas</a></li>
+        <li class="nav-item"><button class="btn btn-outline-light btn-sm ms-lg-3 btn-nav" (click)="scrollTo('acceso')">Entrar al bar</button></li>
+      </ul>
+    </div>
   </div>
-  <button class="nav__burger" (click)="toggleMenu()" [class.active]="menuOpen" aria-label="menu">
-    <span></span><span></span><span></span>
-  </button>
-  <ul class="nav__links" [class.open]="menuOpen">
-    <li (click)="scrollTo('como-funciona')">Cómo funciona</li>
-    <li (click)="scrollTo('catalogo')">El catálogo</li>
-    <li (click)="scrollTo('reglas')">Las reglas</li>
-    <li><button class="btn-nav" (click)="scrollTo('acceso')">Entrar al bar</button></li>
-  </ul>
 </nav>
 
 <!-- HERO -->
@@ -24,43 +30,49 @@
     <div class="hero__vignette"></div>
   </div>
 
-  <div class="hero__content">
-    <p class="hero__pre cinzel">Una noche. Un juego. Sin límites.</p>
-    <div class="hero__ornament">
-      <span class="orn-line"></span>
-      <span class="orn-diamond">◆</span>
-      <span class="orn-line"></span>
-    </div>
-    <h1 class="hero__title cinzel">
-      Vende<br><em>tu Alma</em>
-    </h1>
-    <p class="hero__subtitle">
-      La dinámica más atrevida del bar. Sube lo que estás dispuesto a ofrecer,<br>
-      encuentra a quien lo desea, y negocia en persona.
-    </p>
-    <div class="hero__cta">
-      <button class="btn-primary cinzel" (click)="scrollTo('como-funciona')">
-        <span>Descubre el juego</span>
-        <span class="btn-arrow">→</span>
-      </button>
-      <button class="btn-ghost cinzel" (click)="scrollTo('acceso')">
-        Acceder esta noche
-      </button>
-    </div>
-    <div class="hero__stats">
-      <div class="stat">
-        <span class="stat__num cinzel">∞</span>
-        <span class="stat__label">posibilidades</span>
-      </div>
-      <div class="stat__divider">◆</div>
-      <div class="stat">
-        <span class="stat__num cinzel">100%</span>
-        <span class="stat__label">consensuado</span>
-      </div>
-      <div class="stat__divider">◆</div>
-      <div class="stat">
-        <span class="stat__num cinzel">0</span>
-        <span class="stat__label">rastros digitales</span>
+  <div class="container px-4 h-100">
+    <div class="row justify-content-center align-items-center h-100">
+      <div class="col-12 col-xl-10">
+        <div class="hero__content text-center">
+          <p class="hero__pre cinzel">Una noche. Un juego. Sin límites.</p>
+          <div class="hero__ornament mx-auto mb-4">
+            <span class="orn-line"></span>
+            <span class="orn-diamond">◆</span>
+            <span class="orn-line"></span>
+          </div>
+          <h1 class="hero__title cinzel">
+            Vende<br><em>tu Alma</em>
+          </h1>
+          <p class="hero__subtitle mx-auto">
+            La dinámica más atrevida del bar. Sube lo que estás dispuesto a ofrecer,<br>
+            encuentra a quien lo desea, y negocia en persona.
+          </p>
+          <div class="hero__cta d-flex justify-content-center flex-wrap gap-3 mt-4 mb-5">
+            <button class="btn btn-primary btn-lg btn-primary cinzel" (click)="scrollTo('como-funciona')">
+              <span>Descubre el juego</span>
+              <span class="btn-arrow">→</span>
+            </button>
+            <button class="btn btn-outline-light btn-lg btn-ghost cinzel" (click)="scrollTo('acceso')">
+              Acceder esta noche
+            </button>
+          </div>
+          <div class="hero__stats d-flex justify-content-center flex-wrap gap-4">
+            <div class="stat text-center">
+              <span class="stat__num cinzel">∞</span>
+              <span class="stat__label">posibilidades</span>
+            </div>
+            <div class="stat__divider">◆</div>
+            <div class="stat text-center">
+              <span class="stat__num cinzel">100%</span>
+              <span class="stat__label">consensuado</span>
+            </div>
+            <div class="stat__divider">◆</div>
+            <div class="stat text-center">
+              <span class="stat__num cinzel">0</span>
+              <span class="stat__label">rastros digitales</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -73,97 +85,117 @@
 
 <!-- COMO FUNCIONA -->
 <section class="steps-section" id="como-funciona">
-  <div class="section-header">
-    <div class="ornament-row"><span class="orn-line"></span><span class="orn-diamond cinzel">◆</span><span class="orn-line"></span></div>
-    <p class="section-label cormorant-sc">El ritual</p>
-    <h2 class="section-title cinzel">Cómo funciona</h2>
-  </div>
+  <div class="container px-4">
+    <div class="section-header text-center">
+      <div class="ornament-row justify-content-center"><span class="orn-line"></span><span class="orn-diamond cinzel">◆</span><span class="orn-line"></span></div>
+      <p class="section-label cormorant-sc">El ritual</p>
+      <h2 class="section-title cinzel">Cómo funciona</h2>
+    </div>
 
-  <div class="steps">
-    <div class="step" *ngFor="let s of steps; let i = index" [style.animation-delay]="(i*0.15)+'s'">
-      <div class="step__num cinzel">{{ s.num }}</div>
-      <div class="step__body">
-        <h3 class="step__title cinzel">{{ s.title }}</h3>
-        <p class="step__desc">{{ s.desc }}</p>
+    <div class="row gx-4 gy-4 mt-5">
+      <div class="col-12" *ngFor="let s of steps; let i = index">
+        <div class="step p-4 rounded-4 bg-surface">
+          <div class="d-flex align-items-start gap-3">
+            <div class="step__num cinzel">{{ s.num }}</div>
+            <div class="step__body">
+              <h3 class="step__title cinzel">{{ s.title }}</h3>
+              <p class="step__desc">{{ s.desc }}</p>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="step__connector" *ngIf="i < steps.length - 1"></div>
     </div>
   </div>
 </section>
 
 <!-- CATALOGO -->
 <section class="catalog-section" id="catalogo">
-  <div class="section-header">
-    <div class="ornament-row"><span class="orn-line"></span><span class="orn-diamond cinzel">◆</span><span class="orn-line"></span></div>
-    <p class="section-label cormorant-sc">Lo que se ofrece</p>
-    <h2 class="section-title cinzel">El Catálogo</h2>
-    <p class="section-desc">Cada oferta tiene una ponderación asignada por el administrador según su grado de atrevimiento. Cuanto más osas, más vales.</p>
-  </div>
+  <div class="container px-4">
+    <div class="section-header text-center">
+      <div class="ornament-row justify-content-center"><span class="orn-line"></span><span class="orn-diamond cinzel">◆</span><span class="orn-line"></span></div>
+      <p class="section-label cormorant-sc">Lo que se ofrece</p>
+      <h2 class="section-title cinzel">El Catálogo</h2>
+      <p class="section-desc mx-auto">Cada oferta tiene una ponderación asignada por el administrador según su grado de atrevimiento. Cuanto más osas, más vales.</p>
+    </div>
 
-  <div class="catalog-grid">
-    <div class="offer-card" *ngFor="let o of offers" [class]="'offer-card--'+o.tier">
-      <div class="offer-card__tier cormorant-sc">{{ o.tier }}</div>
-      <div class="offer-card__icon">{{ o.icon }}</div>
-      <h3 class="offer-card__title cinzel">{{ o.title }}</h3>
-      <p class="offer-card__desc">{{ o.desc }}</p>
-      <div class="offer-card__pts">
-        <span class="pts-num cinzel">{{ o.pts }}</span>
-        <span class="pts-label cormorant-sc">créditos</span>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mt-4">
+      <div class="col" *ngFor="let o of offers">
+        <div class="offer-card h-100">
+          <div class="offer-card__tier cormorant-sc">{{ o.tier }}</div>
+          <div class="offer-card__icon">{{ o.icon }}</div>
+          <h3 class="offer-card__title cinzel">{{ o.title }}</h3>
+          <p class="offer-card__desc">{{ o.desc }}</p>
+          <div class="offer-card__pts mt-4">
+            <span class="pts-num cinzel">{{ o.pts }}</span>
+            <span class="pts-label cormorant-sc">créditos</span>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="catalog-note">
-    <span class="orn-diamond">◆</span>
-    <p>El administrador del bar calibra cada ponderación en tiempo real según la energía de la noche.</p>
+    <div class="catalog-note mt-4 d-flex flex-column flex-md-row align-items-center gap-3 justify-content-center text-center text-md-start">
+      <span class="orn-diamond">◆</span>
+      <p>El administrador del bar calibra cada ponderación en tiempo real según la energía de la noche.</p>
+    </div>
   </div>
 </section>
 
 <!-- REGLAS -->
 <section class="rules-section" id="reglas">
-  <div class="rules-inner">
-    <div class="section-header">
-      <div class="ornament-row"><span class="orn-line"></span><span class="orn-diamond cinzel">◆</span><span class="orn-line"></span></div>
+  <div class="container px-4">
+    <div class="section-header text-center">
+      <div class="ornament-row justify-content-center"><span class="orn-line"></span><span class="orn-diamond cinzel">◆</span><span class="orn-line"></span></div>
       <p class="section-label cormorant-sc">El código</p>
       <h2 class="section-title cinzel">Las Reglas</h2>
     </div>
-    <ul class="rules-list">
-      <li *ngFor="let r of rules; let i = index" class="rule-item">
-        <span class="rule-num cinzel">0{{ i+1 }}</span>
-        <span class="rule-text">{{ r }}</span>
-      </li>
-    </ul>
+    <div class="row justify-content-center mt-4">
+      <div class="col-12 col-lg-10">
+        <ul class="rules-list list-unstyled">
+          <li *ngFor="let r of rules; let i = index" class="rule-item py-3">
+            <div class="d-flex flex-column flex-md-row align-items-start gap-3">
+              <span class="rule-num cinzel">0{{ i+1 }}</span>
+              <span class="rule-text">{{ r }}</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </section>
 
 <!-- ACCESO CTA -->
 <section class="access-section" id="acceso">
   <div class="access-bg"></div>
-  <div class="access-content">
-    <div class="ornament-row"><span class="orn-line"></span><span class="orn-diamond cinzel">◆</span><span class="orn-line"></span></div>
-    <h2 class="access-title cinzel">¿Estás listo<br><em>para vender?</em></h2>
-    <p class="access-sub">Solo quienes están dispuestos a arriesgar entran al juego.</p>
-    <div class="access-btns">
-      <button class="btn-primary btn-large cinzel">
-        <span>Registrarme como pareja</span>
-        <span class="btn-arrow">→</span>
-      </button>
-      <button class="btn-gold cinzel">
-        <span class="unicorn-badge">◆</span> Entrar como unicornio
-      </button>
+  <div class="container px-4">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-8">
+        <div class="access-content text-center py-5">
+          <div class="ornament-row justify-content-center"><span class="orn-line"></span><span class="orn-diamond cinzel">◆</span><span class="orn-line"></span></div>
+          <h2 class="access-title cinzel">¿Estás listo<br><em>para vender?</em></h2>
+          <p class="access-sub">Solo quienes están dispuestos a arriesgar entran al juego.</p>
+          <div class="access-btns d-flex justify-content-center mt-4">
+            <button class="btn btn-primary btn-lg cinzel w-100" routerLink="/acceso">
+              <span>Entrar al bar</span>
+              <span class="btn-arrow">→</span>
+            </button>
+          </div>
+          <p class="access-note cormorant-sc mt-4">Acceso validado en puerta · Sin datos permanentes · Solo esta noche</p>
+        </div>
+      </div>
     </div>
-    <p class="access-note cormorant-sc">Acceso validado en puerta · Sin datos permanentes · Solo esta noche</p>
   </div>
 </section>
 
 <!-- FOOTER -->
-<footer class="footer">
-  <div class="footer__logo cinzel">
-    <span>♦</span> Vende tu Alma
+<footer class="footer py-5">
+  <div class="container px-4 text-center">
+    <div class="footer__logo cinzel mb-3">
+      <span>♦</span> Vende tu Alma
+    </div>
+    <p class="footer__tagline cormorant-sc mb-3">Una noche. Un juego. Sin rastros.</p>
+    <div class="footer__ornament justify-content-center mb-3 d-flex align-items-center gap-2">
+      <span class="orn-line"></span><span class="orn-diamond">◆</span><span class="orn-line"></span>
+    </div>
+    <p class="footer__legal">Dinámica exclusiva para adultos en entornos privados con acceso controlado.</p>
   </div>
-  <p class="footer__tagline cormorant-sc">Una noche. Un juego. Sin rastros.</p>
-  <div class="footer__ornament">
-    <span class="orn-line"></span><span class="orn-diamond">◆</span><span class="orn-line"></span>
-  </div>
-  <p class="footer__legal">Dinámica exclusiva para adultos en entornos privados con acceso controlado.</p>
 </footer>
