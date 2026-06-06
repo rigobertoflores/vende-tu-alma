@@ -55,29 +55,40 @@ const PIN = '6969';
     <div class="panel">
       <h2>Crear usuario</h2>
       <form class="crear-form" (ngSubmit)="crearUsuario()">
-        <div class="form-row">
-          <label class="field-label">Apodo
-            <input class="field-input" name="nuApodo" [(ngModel)]="nuevoUsuario.apodo" maxlength="20" placeholder="Apodo único" />
-          </label>
-          <label class="field-label">Contraseña
-            <input class="field-input" name="nuPass" [(ngModel)]="nuevoUsuario.password" type="password" placeholder="Contraseña" />
-          </label>
-        </div>
         <label class="field-label">Tipo
           <select class="field-input" name="nuTipo" [(ngModel)]="nuevoUsuario.tipo">
             <option value="unicornio">Unicornio</option>
-            <option value="pareja">Pareja</option>
+            <option value="pareja">Pareja (2 usuarios)</option>
           </select>
         </label>
+
         @if (nuevoUsuario.tipo === 'pareja') {
-          <label class="field-label">Pareja de (apodo)
-            <input class="field-input" name="nuParejaDe" [(ngModel)]="nuevoUsuario.pareja_de" maxlength="20" placeholder="Apodo de su pareja" />
+          <div class="form-row">
+            <label class="field-label">Apodo — Él / Persona 1
+              <input class="field-input" name="nuApodo" [(ngModel)]="nuevoUsuario.apodo" maxlength="20" placeholder="Ej: Carlos" />
+            </label>
+            <label class="field-label">Apodo — Ella / Persona 2
+              <input class="field-input" name="nuApodo2" [(ngModel)]="nuevoUsuario.apodo2" maxlength="20" placeholder="Ej: María" />
+            </label>
+          </div>
+          <label class="field-label">Contraseña (misma para ambos)
+            <input class="field-input" name="nuPass" [(ngModel)]="nuevoUsuario.password" placeholder="Contraseña compartida" />
           </label>
+        } @else {
+          <div class="form-row">
+            <label class="field-label">Apodo
+              <input class="field-input" name="nuApodo" [(ngModel)]="nuevoUsuario.apodo" maxlength="20" placeholder="Apodo único" />
+            </label>
+            <label class="field-label">Contraseña
+              <input class="field-input" name="nuPass" [(ngModel)]="nuevoUsuario.password" placeholder="Contraseña" />
+            </label>
+          </div>
         }
+
         <p class="error-msg" *ngIf="crearError()">{{ crearError() }}</p>
         <p class="ok-msg" *ngIf="crearOk()">{{ crearOk() }}</p>
         <button class="btn-primary w-full" type="submit" [disabled]="crearLoading()">
-          {{ crearLoading() ? 'Creando...' : 'Crear usuario' }}
+          {{ crearLoading() ? 'Creando...' : nuevoUsuario.tipo === 'pareja' ? 'Crear pareja (2 usuarios)' : 'Crear usuario' }}
         </button>
       </form>
     </div>
@@ -381,7 +392,7 @@ export class AdminComponent implements OnInit {
   pinError = '';
   authenticated = false;
 
-  nuevoUsuario = { apodo: '', password: '', tipo: 'unicornio', pareja_de: '' };
+  nuevoUsuario = { apodo: '', apodo2: '', password: '', tipo: 'unicornio', pareja_de: '' };
   crearLoading = signal(false);
   crearError   = signal('');
   crearOk      = signal('');
@@ -442,22 +453,51 @@ export class AdminComponent implements OnInit {
   }
 
   crearUsuario(): void {
-    const { apodo, password, tipo, pareja_de } = this.nuevoUsuario;
+    const { apodo, apodo2, password, tipo } = this.nuevoUsuario;
     if (!apodo.trim() || !password.trim()) { this.crearError.set('Apodo y contraseña son obligatorios'); return; }
+    if (tipo === 'pareja' && !apodo2.trim()) { this.crearError.set('Debes ingresar el apodo de la segunda persona'); return; }
+
     this.crearLoading.set(true); this.crearError.set(''); this.crearOk.set('');
-    this.api.crearUsuario({ apodo: apodo.trim(), password: password.trim(), tipo, pareja_de: pareja_de.trim() || undefined }, PIN)
-      .subscribe({
-        next: (u) => {
-          this.crearLoading.set(false);
-          this.crearOk.set(`Usuario "${u.apodo}" creado`);
-          this.nuevoUsuario = { apodo: '', password: '', tipo: 'unicornio', pareja_de: '' };
-          this.refreshFromApi();
-        },
-        error: (err) => {
-          this.crearLoading.set(false);
-          this.crearError.set((err.error as { error?: string })?.error ?? 'Error al crear usuario');
-        },
-      });
+
+    if (tipo === 'pareja') {
+      // Crear los dos usuarios enlazados
+      this.api.crearUsuario({ apodo: apodo.trim(), password: password.trim(), tipo: 'pareja', pareja_de: apodo2.trim() }, PIN)
+        .subscribe({
+          next: () => {
+            this.api.crearUsuario({ apodo: apodo2.trim(), password: password.trim(), tipo: 'pareja', pareja_de: apodo.trim() }, PIN)
+              .subscribe({
+                next: () => {
+                  this.crearLoading.set(false);
+                  this.crearOk.set(`Pareja "${apodo.trim()}" y "${apodo2.trim()}" creada`);
+                  this.nuevoUsuario = { apodo: '', apodo2: '', password: '', tipo: 'unicornio', pareja_de: '' };
+                  this.refreshFromApi();
+                },
+                error: (err) => {
+                  this.crearLoading.set(false);
+                  this.crearError.set((err.error as { error?: string })?.error ?? 'Error al crear segundo usuario');
+                },
+              });
+          },
+          error: (err) => {
+            this.crearLoading.set(false);
+            this.crearError.set((err.error as { error?: string })?.error ?? 'Error al crear usuario');
+          },
+        });
+    } else {
+      this.api.crearUsuario({ apodo: apodo.trim(), password: password.trim(), tipo }, PIN)
+        .subscribe({
+          next: (u) => {
+            this.crearLoading.set(false);
+            this.crearOk.set(`Usuario "${u.apodo}" creado`);
+            this.nuevoUsuario = { apodo: '', apodo2: '', password: '', tipo: 'unicornio', pareja_de: '' };
+            this.refreshFromApi();
+          },
+          error: (err) => {
+            this.crearLoading.set(false);
+            this.crearError.set((err.error as { error?: string })?.error ?? 'Error al crear usuario');
+          },
+        });
+    }
   }
 
   guardarCreditos(u: UsuarioLocal): void {
