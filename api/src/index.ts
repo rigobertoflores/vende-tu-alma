@@ -9,8 +9,7 @@ import adminRouter from './routes/admin';
 const app = express();
 const PORT = process.env['PORT'] ?? 3000;
 
-const allowedOrigin = process.env['FRONTEND_URL'] ?? 'http://localhost:4200';
-app.use(cors({ origin: allowedOrigin, credentials: true }));
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
 app.get('/api/health', (_req, res) => res.json({ ok: true, ts: Date.now() }));

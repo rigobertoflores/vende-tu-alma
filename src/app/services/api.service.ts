@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UsuarioLocal, Oferta } from './juego.service';
 
-const BASE = 'http://localhost:3000/api';
+const BASE = 'https://vende-tu-alma-production.up.railway.app/api';
 const TOKEN_KEY = 'vta_token';
 
 @Injectable({ providedIn: 'root' })
