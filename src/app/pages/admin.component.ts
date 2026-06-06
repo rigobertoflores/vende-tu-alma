@@ -106,6 +106,7 @@ const PIN = '6969';
                 [(ngModel)]="creditosEdicion[u.id]" [placeholder]="u.creditos + ' cr'" />
               <button class="btn-ghost sm" (click)="guardarCreditos(u)">Guardar</button>
               <span class="user-creditos">{{ u.creditos }} cr</span>
+              <button class="btn-delete sm" (click)="eliminarUsuario(u)">✕</button>
             </div>
           </div>
         }
@@ -172,6 +173,7 @@ const PIN = '6969';
               <button class="btn-ghost" (click)="toggleOferta(o)">
                 {{ o.disponible ? 'Desactivar' : 'Activar' }}
               </button>
+              <button class="btn-delete sm" (click)="eliminarOferta(o)">✕</button>
             </div>
           }
         </div>
@@ -362,6 +364,14 @@ textarea.field-input { min-height: 60px; resize: vertical; }
 .trato-creditos { color: var(--gold); font-family: 'Cinzel', serif; font-size: 0.9rem; }
 .trato-fecha { color: var(--text-muted); font-size: 0.78rem; }
 
+.btn-delete {
+  background: transparent; color: var(--crimson-bright);
+  border: 1px solid rgba(192,57,43,0.4);
+  padding: 0.5rem 0.65rem; cursor: pointer;
+  font-size: 0.8rem; line-height: 1;
+}
+.btn-delete:hover { background: rgba(192,57,43,0.1); }
+
 .empty { color: var(--text-muted); font-size: 0.9rem; }
 .error-panel { display: grid; gap: 0.75rem; }
   `]
@@ -500,6 +510,20 @@ export class AdminComponent implements OnInit {
     const msg = disponible ? '¿Activar TODAS las ofertas aprobadas?' : '¿Desactivar TODAS las ofertas?';
     if (!confirm(msg)) return;
     this.api.toggleTodasOfertas(disponible, PIN).subscribe({
+      next: () => this.refreshFromApi(),
+    });
+  }
+
+  eliminarUsuario(u: UsuarioLocal): void {
+    if (!confirm(`¿Eliminar al usuario "${u.apodo}"?`)) return;
+    this.api.eliminarUsuario(u.id, PIN).subscribe({
+      next: () => this.refreshFromApi(),
+    });
+  }
+
+  eliminarOferta(o: Oferta): void {
+    if (!confirm(`¿Eliminar la oferta "${o.titulo}"?`)) return;
+    this.api.eliminarOferta(o.id, PIN).subscribe({
       next: () => this.refreshFromApi(),
     });
   }

@@ -122,6 +122,10 @@ export class ApiService {
     return this.http.put<Oferta>(`${BASE}/admin/ofertas/${id}/toggle`, { disponible }, { headers: this.adminHeaders(pin) });
   }
 
+  eliminarOferta(id: string, pin: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${BASE}/admin/ofertas/${id}`, { headers: this.adminHeaders(pin) });
+  }
+
   editarOferta(id: string, data: Partial<{ titulo: string; descripcion: string; categoria: string; ponderacion: number | null; disponible: boolean }>, pin: string): Observable<unknown> {
     return this.http.put(`${BASE}/admin/ofertas/${id}`, data, { headers: this.adminHeaders(pin) });
   }

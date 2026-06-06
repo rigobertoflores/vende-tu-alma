@@ -88,6 +88,14 @@ router.delete('/usuarios/:id', requirePin, (req: Request, res: Response): void =
   res.json({ message: 'Usuario eliminado' });
 });
 
+// DELETE /api/admin/ofertas/:id
+router.delete('/ofertas/:id', requirePin, (req: Request, res: Response): void => {
+  const id = String(req.params['id']);
+  const result = db.prepare('DELETE FROM ofertas WHERE id = ?').run(id);
+  if (result.changes === 0) { res.status(404).json({ error: 'Oferta no encontrada' }); return; }
+  res.json({ message: 'Oferta eliminada' });
+});
+
 // GET /api/admin/ofertas
 router.get('/ofertas', requirePin, (_req, res: Response): void => {
   const ofertas = db
