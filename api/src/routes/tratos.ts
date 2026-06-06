@@ -76,4 +76,20 @@ router.post('/', requireAuth, (req: AuthRequest, res: Response): void => {
   });
 });
 
+// GET /api/tratos/mis-ventas — tratos donde el usuario es vendedor (para notificaciones)
+router.get('/mis-ventas', requireAuth, (req: AuthRequest, res: Response): void => {
+  const ventas = db.prepare(`
+    SELECT t.id, t.timestamp, t.creditos_transferidos,
+           o.titulo as oferta_titulo,
+           c.apodo as comprador_apodo
+    FROM tratos t
+    JOIN ofertas  o ON o.id = t.oferta_id
+    JOIN usuarios c ON c.id = t.comprador_id
+    WHERE t.vendedor_id = ?
+    ORDER BY t.timestamp DESC
+    LIMIT 20
+  `).all(req.user!.userId);
+  res.json(ventas);
+});
+
 export default router;

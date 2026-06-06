@@ -1,15 +1,25 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { JuegoService, Oferta, UsuarioLocal } from '../services/juego.service';
-import { ApiService } from '../services/api.service';
+import { ApiService, Venta } from '../services/api.service';
 
 @Component({
   selector: 'app-mi-alma',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   template: `
+@if (nuevaVenta()) {
+  <div class="notif-venta" (click)="cerrarNotificacion()">
+    <span class="notif-icon">💰</span>
+    <div>
+      <p class="notif-title">¡Compraron tu oferta!</p>
+      <p class="notif-detalle"><strong>{{ nuevaVenta()!.comprador_apodo }}</strong> compró <em>{{ nuevaVenta()!.oferta_titulo }}</em> · +{{ nuevaVenta()!.creditos_transferidos }} cr</p>
+    </div>
+  </div>
+}
+
 <section class="page mi-alma-page container-fluid py-4" *ngIf="usuario">
   <div class="row justify-content-center">
     <div class="col-12 col-lg-10">
@@ -94,6 +104,25 @@ import { ApiService } from '../services/api.service';
           <p class="hint">La ponderación quedará pendiente hasta que el administrador la apruebe.</p>
         </form>
       </div>
+
+      <!-- ── Mis ventas ── -->
+      @if (ventas.length) {
+        <div class="panel split-grid card bg-transparent border-0 p-4 mt-4">
+          <div class="box">
+            <h2>Mis ventas</h2>
+            @for (v of ventas; track v.id) {
+              <div class="venta-row">
+                <div>
+                  <span class="venta-titulo">{{ v.oferta_titulo }}</span>
+                  <span class="venta-comprador">Comprado por <strong>{{ v.comprador_apodo }}</strong></span>
+                </div>
+                <span class="venta-cr">+{{ v.creditos_transferidos }} cr</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
     </div>
   </div>
 </section>
@@ -378,34 +407,64 @@ textarea { min-height: 110px; resize: vertical; }
   font-size: 0.9rem;
 }
 
+/* ── Ventas ── */
+.venta-row {
+  display: flex; justify-content: space-between;
+  align-items: center; gap: 1rem; flex-wrap: wrap;
+  padding: 0.65rem 0; border-top: 1px solid var(--border);
+}
+.venta-titulo { display: block; color: var(--text-primary); font-family: 'Cinzel', serif; font-size: 0.9rem; }
+.venta-comprador { display: block; color: var(--text-secondary); font-size: 0.82rem; }
+.venta-comprador strong { color: var(--gold); }
+.venta-cr { color: #6fcf97; font-family: 'Cinzel', serif; white-space: nowrap; }
+
+/* ── Notificación de venta ── */
+.notif-venta {
+  position: fixed; top: 4.5rem; left: 50%; transform: translateX(-50%);
+  z-index: 500; width: min(460px, 92vw);
+  background: rgba(10,5,20,0.97);
+  border: 1px solid var(--gold);
+  box-shadow: 0 0 30px rgba(191,95,255,0.25);
+  padding: 1rem 1.25rem;
+  display: flex; align-items: center; gap: 1rem;
+  border-radius: 2px; cursor: pointer;
+  animation: slideDown 0.35s ease;
+}
+.notif-icon { font-size: 1.8rem; flex-shrink: 0; }
+.notif-title { font-family: 'Cinzel', serif; color: var(--gold); font-size: 0.9rem; margin: 0 0 0.2rem; }
+.notif-detalle { color: var(--text-secondary); font-size: 0.85rem; margin: 0; }
+.notif-detalle strong { color: var(--text-primary); }
+.notif-detalle em { color: var(--gold); font-style: normal; }
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
 @media (max-width: 900px) {
-  .page {
-    padding: 1.5rem 1rem 2rem;
-  }
-
-  .split-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .hero-panel,
-  .panel {
-    padding: 1.25rem;
-  }
+  .page { padding: 1.5rem 1rem 2rem; }
+  .split-grid { grid-template-columns: 1fr; }
+  .hero-panel, .panel { padding: 1.25rem; }
 }
     `
   ]
 })
-export class MiAlmaComponent implements OnInit {
+export class MiAlmaComponent implements OnInit, OnDestroy {
   usuario: UsuarioLocal | null = null;
   ofertas: Oferta[] = [];
+  ventas: Venta[] = [];
+  nuevaVenta = signal<Venta | null>(null);
   titulo = '';
   descripcion = '';
   categoria: 'tentador' | 'atrevido' | 'sin-limite' = 'tentador';
 
-  cargando = signal(false);
-  enviando = signal(false);
+  cargando  = signal(false);
+  enviando  = signal(false);
   errorOferta = signal('');
-  okOferta = signal('');
+  okOferta    = signal('');
+
+  private pollInterval = 0;
+  private ultimaVentaTs = 0;
 
   constructor(
     private juego: JuegoService,
@@ -415,17 +474,35 @@ export class MiAlmaComponent implements OnInit {
 
   ngOnInit(): void {
     const cached = this.juego.getUsuarioActual();
-    if (!cached) {
-      this.router.navigate(['/acceso']);
-      return;
-    }
+    if (!cached) { this.router.navigate(['/acceso']); return; }
     this.usuario = cached;
     this.refreshOfertas();
     this.api.getMe().subscribe({
       next: (u) => { this.juego.guardarUsuario(u); this.usuario = u; },
       error: () => { this.router.navigate(['/acceso']); },
     });
+    this.cargarVentas(false);
+    this.pollInterval = window.setInterval(() => this.cargarVentas(true), 30000);
   }
+
+  ngOnDestroy(): void {
+    window.clearInterval(this.pollInterval);
+  }
+
+  cargarVentas(notificar: boolean): void {
+    this.api.getMisVentas().subscribe({
+      next: (ventas) => {
+        if (notificar && ventas.length && ventas[0].timestamp > this.ultimaVentaTs) {
+          this.nuevaVenta.set(ventas[0]);
+          setTimeout(() => this.nuevaVenta.set(null), 6000);
+        }
+        if (ventas.length) this.ultimaVentaTs = ventas[0].timestamp;
+        this.ventas = ventas;
+      },
+    });
+  }
+
+  cerrarNotificacion(): void { this.nuevaVenta.set(null); }
 
   refreshOfertas(): void {
     this.cargando.set(true);

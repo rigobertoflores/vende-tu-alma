@@ -4,6 +4,23 @@ import { Observable } from 'rxjs';
 import { UsuarioLocal, Oferta } from './juego.service';
 
 const BASE = 'https://vende-tu-alma-production.up.railway.app/api';
+
+export interface Venta {
+  id: string;
+  timestamp: number;
+  creditos_transferidos: number;
+  oferta_titulo: string;
+  comprador_apodo: string;
+}
+
+export interface Trato {
+  id: string;
+  timestamp: number;
+  creditos_transferidos: number;
+  oferta_titulo: string;
+  comprador_apodo: string;
+  vendedor_apodo: string;
+}
 const TOKEN_KEY = 'vta_token';
 
 @Injectable({ providedIn: 'root' })
@@ -74,6 +91,10 @@ export class ApiService {
     );
   }
 
+  getMisVentas(): Observable<Venta[]> {
+    return this.http.get<Venta[]>(`${BASE}/tratos/mis-ventas`, { headers: this.authHeaders() });
+  }
+
   // ── Admin ──────────────────────────────────────────
   crearUsuario(data: {
     apodo: string; password: string; tipo: string; pareja_de?: string;
@@ -99,6 +120,26 @@ export class ApiService {
 
   toggleOferta(id: string, disponible: boolean, pin: string): Observable<Oferta> {
     return this.http.put<Oferta>(`${BASE}/admin/ofertas/${id}/toggle`, { disponible }, { headers: this.adminHeaders(pin) });
+  }
+
+  editarOferta(id: string, data: Partial<{ titulo: string; descripcion: string; categoria: string; ponderacion: number | null; disponible: boolean }>, pin: string): Observable<unknown> {
+    return this.http.put(`${BASE}/admin/ofertas/${id}`, data, { headers: this.adminHeaders(pin) });
+  }
+
+  toggleTodasOfertas(disponible: boolean, pin: string): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(`${BASE}/admin/ofertas/todas/toggle`, { disponible }, { headers: this.adminHeaders(pin) });
+  }
+
+  editarCreditosUsuario(id: string, creditos: number, pin: string): Observable<unknown> {
+    return this.http.put(`${BASE}/admin/usuarios/${id}/creditos`, { creditos }, { headers: this.adminHeaders(pin) });
+  }
+
+  editarCreditosTodos(creditos: number, pin: string): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(`${BASE}/admin/usuarios/creditos/todos`, { creditos }, { headers: this.adminHeaders(pin) });
+  }
+
+  getTratosAdmin(pin: string): Observable<Trato[]> {
+    return this.http.get<Trato[]>(`${BASE}/admin/tratos`, { headers: this.adminHeaders(pin) });
   }
 
   cerrarNoche(pin: string): Observable<{ message: string }> {

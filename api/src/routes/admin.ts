@@ -127,6 +127,75 @@ router.put('/ofertas/:id/toggle', requirePin, (req: Request, res: Response): voi
   res.json(db.prepare('SELECT * FROM ofertas WHERE id = ?').get(id) as unknown as Oferta);
 });
 
+// PUT /api/admin/usuarios/:id/creditos — editar créditos de un usuario
+router.put('/usuarios/:id/creditos', requirePin, (req: Request, res: Response): void => {
+  const { creditos } = req.body as { creditos?: number };
+  const id = String(req.params['id']);
+  if (typeof creditos !== 'number' || creditos < 0) {
+    res.status(400).json({ error: 'Créditos debe ser un número >= 0' }); return;
+  }
+  const result = db.prepare('UPDATE usuarios SET creditos = ? WHERE id = ?').run(creditos, id);
+  if (result.changes === 0) { res.status(404).json({ error: 'Usuario no encontrado' }); return; }
+  res.json(db.prepare('SELECT * FROM usuarios WHERE id = ?').get(id));
+});
+
+// PUT /api/admin/usuarios/creditos/todos — asignar mismos créditos a todos
+router.put('/usuarios/creditos/todos', requirePin, (req: Request, res: Response): void => {
+  const { creditos } = req.body as { creditos?: number };
+  if (typeof creditos !== 'number' || creditos < 0) {
+    res.status(400).json({ error: 'Créditos debe ser un número >= 0' }); return;
+  }
+  db.prepare('UPDATE usuarios SET creditos = ?').run(creditos);
+  res.json({ message: `Créditos de todos los usuarios actualizados a ${creditos}` });
+});
+
+// PUT /api/admin/ofertas/:id — editar oferta completa
+router.put('/ofertas/:id', requirePin, (req: Request, res: Response): void => {
+  const { titulo, descripcion, categoria, ponderacion, disponible } = req.body as {
+    titulo?: string; descripcion?: string; categoria?: string;
+    ponderacion?: number | null; disponible?: boolean;
+  };
+  const id = String(req.params['id']);
+  const fields: string[] = [];
+  const values: (string | number | null)[] = [];
+  if (titulo !== undefined)      { fields.push('titulo = ?');      values.push(titulo); }
+  if (descripcion !== undefined) { fields.push('descripcion = ?'); values.push(descripcion); }
+  if (categoria !== undefined)   { fields.push('categoria = ?');   values.push(categoria); }
+  if (ponderacion !== undefined) { fields.push('ponderacion = ?'); values.push(ponderacion); }
+  if (disponible !== undefined)  { fields.push('disponible = ?');  values.push(disponible ? 1 : 0); }
+  if (!fields.length) { res.status(400).json({ error: 'Nada que actualizar' }); return; }
+  values.push(id);
+  const result = db.prepare(`UPDATE ofertas SET ${fields.join(', ')} WHERE id = ?`).run(...values);
+  if (result.changes === 0) { res.status(404).json({ error: 'Oferta no encontrada' }); return; }
+  res.json(db.prepare('SELECT * FROM ofertas WHERE id = ?').get(id));
+});
+
+// PUT /api/admin/ofertas/todas/toggle — activar o desactivar todas las ofertas
+router.put('/ofertas/todas/toggle', requirePin, (req: Request, res: Response): void => {
+  const { disponible } = req.body as { disponible?: boolean };
+  if (typeof disponible !== 'boolean') {
+    res.status(400).json({ error: 'disponible debe ser true o false' }); return;
+  }
+  db.prepare('UPDATE ofertas SET disponible = ? WHERE ponderacion IS NOT NULL').run(disponible ? 1 : 0);
+  res.json({ message: disponible ? 'Todas las ofertas activadas' : 'Todas las ofertas desactivadas' });
+});
+
+// GET /api/admin/tratos — lista de todas las transacciones
+router.get('/tratos', requirePin, (_req, res: Response): void => {
+  const tratos = db.prepare(`
+    SELECT t.id, t.timestamp, t.creditos_transferidos,
+           o.titulo as oferta_titulo,
+           c.apodo as comprador_apodo,
+           v.apodo as vendedor_apodo
+    FROM tratos t
+    JOIN ofertas  o ON o.id = t.oferta_id
+    JOIN usuarios c ON c.id = t.comprador_id
+    JOIN usuarios v ON v.id = t.vendedor_id
+    ORDER BY t.timestamp DESC
+  `).all();
+  res.json(tratos);
+});
+
 // DELETE /api/admin/noche — borrar todo y empezar de cero
 router.delete('/noche', requirePin, (_req, res: Response): void => {
   db.exec('BEGIN TRANSACTION');
